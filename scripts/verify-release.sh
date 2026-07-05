@@ -38,6 +38,20 @@ json.loads(Path("config/claude/settings.hooks.example.json").read_text())
 print("JSON config parsed")
 PY
 
+python3 <<'PY'
+from pathlib import Path
+prompt = Path("prompts/fable-provider-native-system.md").read_text()
+required = [
+    "AskUserQuestion safety",
+    "Do not use AskUserQuestion for implementation scope choices",
+    "If AskUserQuestion is truly necessary, ask exactly one question",
+]
+missing = [item for item in required if item not in prompt]
+if missing:
+    raise SystemExit(f"Prompt missing AskUserQuestion guard text: {missing!r}")
+print("AskUserQuestion prompt guard present")
+PY
+
 if rg --pcre2 -n \
   '(sk-[A-Za-z0-9_-]{20,}|ghp_[A-Za-z0-9_]{20,}|gho_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)' \
   --glob '!*.bak' \
